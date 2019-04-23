@@ -39,7 +39,6 @@ public class Employee {
   public Employee(String firstName, String lastName) {
 	  this.firstName = new SimpleStringProperty(firstName);
 	  this.lastName = new SimpleStringProperty(lastName);
-	  
 	  this.middleName = new SimpleStringProperty("J");
 	  this.ssn = new SimpleLongProperty(9998887777L);
 	  this.birthday = new SimpleObjectProperty<LocalDate>(LocalDate.of(1997, 6, 20));

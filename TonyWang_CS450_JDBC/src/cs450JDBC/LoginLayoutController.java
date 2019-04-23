@@ -12,7 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import cs450JDBC.MainApplication;
-import cs450JDBC.JDBC_Controller;
+import cs450JDBC.JDBC_Controller; //main controller that does all the DB calling
 
 public class LoginLayoutController {
 	
@@ -26,7 +26,6 @@ public class LoginLayoutController {
 	private Label LoginStatusLabel;
 	
 	private MainApplication MainApplication;
-	
 	private JDBC_Controller JDBC_Controller = new JDBC_Controller(); 
 	
 	/**
