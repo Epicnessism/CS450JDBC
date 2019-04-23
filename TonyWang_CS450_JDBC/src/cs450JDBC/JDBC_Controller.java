@@ -67,4 +67,10 @@ public class JDBC_Controller {
 		}
 		return false;
 	}
+	
+	public boolean insert_New_Employee() {
+		
+		return false;
+	}
+	
 }

@@ -17,7 +17,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import javafx.stage.Stage;
-import cs450JDBC.MainJDBC; //the JDBC file that interacts with the db
+import cs450JDBC.view.InsertNewEmployeeOverviewController;
+import cs450JDBC.view.LoginLayoutController;
 
 
 public class MainApplication extends Application {
@@ -41,7 +42,7 @@ public class MainApplication extends Application {
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApplication.class.getResource("LoginLayout.fxml"));
+            loader.setLocation(MainApplication.class.getResource("view/LoginLayout.fxml"));
             LoginLayout = (AnchorPane) loader.load();
             
             // Show the scene containing the root layout.
@@ -49,7 +50,7 @@ public class MainApplication extends Application {
             primaryStage.setScene(scene); //load the desired scene?
             primaryStage.show(); //displays the GUI i think?
             
-            LoginLayoutController controller = loader.getController();
+            LoginLayoutController controller = loader.getController(); //what does this do again??
 		    controller.setMainApp(this);
             
         } catch (IOException e) {
@@ -57,6 +58,28 @@ public class MainApplication extends Application {
         }
     }
 	
+    /**
+     * show the insert new employee scene
+     */
+    public void showInsertNewEmployeeOverview() {
+    	try {
+    		this.primaryStage.setTitle("Manager's Name..."); //TODO add manager's name
+    		FXMLLoader loader = new FXMLLoader();
+    		loader.setLocation(MainApplication.class.getResource("view/InsertNewEmployeeOverview.fxml"));
+    		AnchorPane InsertNewEmployeeOverview = (AnchorPane) loader.load();
+    		
+    		Scene scene = new Scene(InsertNewEmployeeOverview); //Instantiate the a new scene
+            primaryStage.setScene(scene); //load the desired scene?
+            primaryStage.show(); //displays the GUI i think?
+    		
+    		InsertNewEmployeeOverviewController controller = loader.getController(); //what does this do again??
+		    controller.setMainApp(this);
+    		
+    		
+    	} catch (IOException e) {
+          e.printStackTrace();
+      }
+    }
 //    /**
 //     * Shows the person overview inside the root layout.
 //     */

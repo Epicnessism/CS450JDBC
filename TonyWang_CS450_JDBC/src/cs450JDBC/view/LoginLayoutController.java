@@ -4,7 +4,7 @@
  * CS450 Final Project
  * 4/21/19
  */
-package cs450JDBC;
+package cs450JDBC.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -38,8 +38,9 @@ public class LoginLayoutController {
     public void search_ManagerSSN() {
     	boolean verify = JDBC_Controller.check_Manager_SSN(managerSSN.getText());
     	if(verify) {
-    		LoginStatusLabel.setText("Welcome!");
+    		LoginStatusLabel.setText("Welcome!"); //TODO too fast, do somewhere else
     		//TODO load the new screen for inputting a new employee...
+    		MainApplication.showInsertNewEmployeeOverview(); //this should show new scene
     	} else {
     		LoginStatusLabel.setText("SSN denied, please try again.");
     	}
@@ -54,9 +55,7 @@ public class LoginLayoutController {
     	LoginStatusLabel.setText("");
 //    	searchManagerSSN.setOnAction(e -> testButtonLabel.setText(managerSSN.getText()));
 //    	searchManagerSSN.setOnAction(e -> JDBC_Controller.check_Manager_SSN(managerSSN.getText()));
-//        // Initialize the person table with the two columns.
-//        firstNameColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-//        lastNameColumn.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
+    	
     }
     
     /**
@@ -66,9 +65,6 @@ public class LoginLayoutController {
      */
     public void setMainApp(MainApplication mainApplication) {
         this.MainApplication = mainApplication;
-
-//        // Add observable list data to the table
-//        personTable.setItems(mainApp.getPersonData());
     }
 	
 }

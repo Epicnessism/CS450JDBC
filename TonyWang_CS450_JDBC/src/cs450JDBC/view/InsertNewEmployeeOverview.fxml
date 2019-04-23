@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs450JDBC.view.InsertNewEmployeeOverviewController">
+   <children>
+      <TitledPane animated="false" prefHeight="400.0" prefWidth="600.0" text="New Employee" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TextField fx:id="firstName" layoutX="26.0" layoutY="19.0" promptText="First Name" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0" />
+                  <TextField fx:id="middleName" layoutX="211.0" layoutY="30.0" promptText="Middle Initial" AnchorPane.leftAnchor="210.0" />
+                  <TextField fx:id="lastName" layoutX="388.0" layoutY="30.0" promptText="Last Name" AnchorPane.rightAnchor="30.0" />
+                  <TextField fx:id="ssn" layoutX="40.0" layoutY="74.0" promptText="Social Security Number" AnchorPane.leftAnchor="30.0" />
+                  <TextField fx:id="birthday" layoutX="220.0" layoutY="74.0" promptText="Birthday" AnchorPane.leftAnchor="210.0" />
+                  <TextField fx:id="address" layoutX="400.0" layoutY="74.0" promptText="Address" AnchorPane.rightAnchor="30.0" />
+                  <TextField fx:id="sex" layoutX="40.0" layoutY="115.0" promptText="Sex" AnchorPane.leftAnchor="30.0" />
+                  <TextField fx:id="salary" layoutX="220.0" layoutY="115.0" promptText="Salary" AnchorPane.leftAnchor="210.0" />
+                  <TextField fx:id="superSsn" layoutX="409.0" layoutY="115.0" promptText="Superior SSN" AnchorPane.rightAnchor="30.0" />
+                  <TextField fx:id="dno" layoutX="40.0" layoutY="163.0" promptText="Department Number" />
+                  <TextField fx:id="email" layoutX="220.0" layoutY="163.0" promptText="Email" AnchorPane.leftAnchor="210.0" />
+                  <Button fx:id="insertNewEmployee" layoutX="461.0" layoutY="210.0" mnemonicParsing="false" onAction="#insert_New_Employee" text="Insert" />
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
+   </children>
+</AnchorPane>

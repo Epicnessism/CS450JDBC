@@ -5,7 +5,7 @@
  * 4/21/19
  */
 
-package cs450JDBC;
+package cs450JDBC.model;
 
 import java.time.LocalDate;
 
@@ -40,12 +40,12 @@ public class Employee {
 	  this.firstName = new SimpleStringProperty(firstName);
 	  this.lastName = new SimpleStringProperty(lastName);
 	  this.middleName = new SimpleStringProperty("J");
-	  this.ssn = new SimpleLongProperty(9998887777L);
+	  this.ssn = new SimpleLongProperty(999887777L);
 	  this.birthday = new SimpleObjectProperty<LocalDate>(LocalDate.of(1997, 6, 20));
 	  this.address = new SimpleStringProperty("some address");
 	  this.sex = new SimpleStringProperty("M");
 	  this.salary = new SimpleDoubleProperty(82500.95);
-	  this.superSsn = new SimpleLongProperty(9998887777L);
+	  this.superSsn = new SimpleLongProperty(999887777L);
 	  this.dno = new SimpleIntegerProperty(5);
 	  this.email = new SimpleStringProperty("twang9@gmu.edu");
 	  
