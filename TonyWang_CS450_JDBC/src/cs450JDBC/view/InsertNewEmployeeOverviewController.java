@@ -9,6 +9,7 @@ package cs450JDBC.view;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 //import javafx.scene.control.Label;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.TitledPane;
@@ -52,6 +53,8 @@ public class InsertNewEmployeeOverviewController {
 	private TextField email;
 	@FXML
 	private Button generalInformation_Next;
+	@FXML
+	private Label generalInformation_errorLabel;
 	
 	//ProjectInformation Entities
 	@FXML
@@ -64,6 +67,8 @@ public class InsertNewEmployeeOverviewController {
 	private Button projectInformation_Next;
 	@FXML
 	private Button projectInformation_Submit;
+	@FXML
+	private Label projectInformation_errorLabel;
 	
 	//DependentInformation Entities
 	@FXML
@@ -78,6 +83,8 @@ public class InsertNewEmployeeOverviewController {
 	private TextField d_Relationship;
 	@FXML
 	private Button DependentInformation_Next;
+	@FXML
+	private Label dependentInformation_errorLabel;
 	
 	
 	private MainApplication MainApplication;
@@ -118,7 +125,7 @@ public class InsertNewEmployeeOverviewController {
 			try {
 				int tempSsn = Integer.parseInt(ssn.getText()); //temp ssn for cleaner if statement
 				//check for a valid ssn first
-				if(!(tempSsn >= 100000000) || !(tempSsn < 1000000000) ) {
+				if(!(tempSsn >= 100000000) || !(tempSsn < 1000000000) ) { //must be exactly 9 digits
 					throw new Exception("Too many or too few digits..."); //Invalid SSN
 				}
 				//if all conditions satisfied, a valid employee can be inserted, move to get project info
@@ -163,11 +170,21 @@ public class InsertNewEmployeeOverviewController {
 				int tempHours = Integer.parseInt(hours.getText());
 				if(tempHours > 9999) {
 //					System.out.println("Too many hours...");
-					throw new Exception("Too many hours...");
+					throw new Exception("Exceeds type limit set by the database of 4 digits.");
 				}
-				//TODO if get here, good to go, call db_insert_project
-//				JDBC_Controller
-				
+				//get sum hours of employee from db and subtract from 40
+				int existingHours = JDBC_Controller.get_Works_On_Hours(essn.getText());
+				if(existingHours == -1) {
+					throw new Exception("Error?"); //TODO fix this later
+				} else if(existingHours < 40 && (existingHours + tempHours <= 40)) {
+					if(!essn.getText().isEmpty() && !pno.getText().isEmpty()) {
+						//if get here, good to go, call db_insert_project
+						JDBC_Controller.insert_Employee_WorksOn_Project(essn.getText(), Integer.parseInt(pno.getText()), tempHours );
+						System.out.println("got after the insert");
+					}
+				} else {
+					System.out.println("Too many hours for this employee...");
+				}
 			} catch(Exception e) {
 				if(e.getMessage().isEmpty()) {
 					System.out.println("Invalid hours value...");

@@ -80,7 +80,8 @@ public class JDBC_Controller {
 										String salary, 
 										String superSsn, 
 										String dno, 
-										String email) throws SQLException, IOException, ParseException {
+										String email) throws SQLException, IOException, ParseException 
+	{
 		try {
 			Class.forName(DRIVERNAME);
 			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
@@ -99,11 +100,21 @@ public class JDBC_Controller {
 			int tempSalary = Integer.parseInt(salary);
 			int tempDno = Integer.parseInt(dno);
 			
+			/**
+			 * insert into employee (Fname, Lname, Minit, ssn, bdate, address, Sex, Salary, Superssn, dno, email) Values ('Tony', 'Wang', 'J', 123456781, '20-JUN-97', 'Chantilly, VA', 'M', 82500, 888665555, 5, 'twang9@gmu.edu')
+
+				select * from employee e join works_on w on e.ssn = w.essn where ssn = 123456781
+				
+				delete from employee where ssn = 123456781
+
+			 */
+			
 			PreparedStatement statement; //maybe nextTime, I don't know how to use this atm
 			String query = "insert into employee (Fname, Lname, Minit, ssn, bdate, address, Sex, Salary, Superssn, dno, email)"
 					+ "Values (?,?,?,?,?,?,?,?,?,?,?)";
 			statement = connection.prepareStatement(query);
 			statement.clearParameters();
+			
 			statement.setString(1, firstName);
 			statement.setString(2, lastName);
 			statement.setString(3, middleName);
@@ -135,5 +146,75 @@ public class JDBC_Controller {
 		
 		return false;
 	}
+	
+	public boolean insert_Employee_WorksOn_Project(String essn, int pno, int hours) {
+		try {
+			Class.forName(DRIVERNAME);
+			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
+		}
+        catch(ClassNotFoundException e) {
+        	System.out.println("Driver could not be loaded."); //Visual confirmation if the drivers failed
+        }
+		
+		try {
+			Connection connection = DriverManager.getConnection(dbUrl, username, password);
+			
+			PreparedStatement statement;
+			String query = "insert into works_on (essn, pno, hours) values (?,?,?)";
+			statement = connection.prepareStatement(query);
+			statement.clearParameters();
+			
+			statement.setString(1,essn);
+			statement.setInt(2,pno);
+			statement.setInt(3,hours);
+			
+			int attempt = statement.executeUpdate();
+			if(attempt == 1) {
+				System.out.println("success insert");
+				return true;
+			} else {
+				System.out.println("did not insert");
+			}
+        	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		
+		
+		return false;
+	}
+	
+	public int get_Works_On_Hours(String essn) {
+		try {
+			Class.forName(DRIVERNAME);
+			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
+		}
+        catch(ClassNotFoundException e) {
+        	System.out.println("Driver could not be loaded."); //Visual confirmation if the drivers failed
+        }
+		
+		try {
+			Connection connection = DriverManager.getConnection(dbUrl, username, password);
+			
+			PreparedStatement statement;
+			String query = "select sum(hours) hours from works_on where essn = ?";
+			statement = connection.prepareStatement(query);
+			statement.clearParameters();
+			
+			statement.setString(1,essn);
+			
+			ResultSet results = statement.executeQuery();
+			results.next();
+			System.out.println(results.getInt("hours"));
+			return results.getInt("hours");
+        	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return -1; //failed
+	}
+	
 	
 }
