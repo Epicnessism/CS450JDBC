@@ -69,6 +69,8 @@ public class MainApplication extends Application {
     		AnchorPane InsertNewEmployeeOverview = (AnchorPane) loader.load();
     		
     		Scene scene = new Scene(InsertNewEmployeeOverview); //Instantiate the a new scene
+//    		scene.getStylesheets().add("../InsertNewEmployeeOverview.css"); //this doesn't work..
+    		scene.getStylesheets().add(getClass().getResource("InsertNewEmployeeOverview.css").toExternalForm());
             primaryStage.setScene(scene); //load the desired scene?
             primaryStage.show(); //displays the GUI i think?
     		
@@ -80,27 +82,6 @@ public class MainApplication extends Application {
           e.printStackTrace();
       }
     }
-//    /**
-//     * Shows the person overview inside the root layout.
-//     */
-//    public void showPersonOverview() {
-//        try {
-//            // Load person overview.
-//            FXMLLoader loader = new FXMLLoader();
-//            loader.setLocation(MainApplication.class.getResource("view/PersonOverview.fxml"));
-//            AnchorPane personOverview = (AnchorPane) loader.load();
-//            
-//            // Set person overview into the center of root layout.
-//            rootLayout.setCenter(personOverview);
-//    
-//			 // Give the controller access to the main app.
-//			    PersonOverviewController controller = loader.getController();
-//			    controller.setMainApp(this);
-//    
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 	
 	/**
      * Returns the main stage.

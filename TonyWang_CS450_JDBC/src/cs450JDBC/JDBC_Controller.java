@@ -70,7 +70,7 @@ public class JDBC_Controller {
 		return false;
 	}
 	
-	public boolean insert_New_Employee(String firstName, 
+	public String insert_New_Employee(String firstName, 
 										String middleName, 
 										String lastName, 
 										String ssn, 
@@ -129,8 +129,10 @@ public class JDBC_Controller {
 			int attempt = statement.executeUpdate();
 			if(attempt == 1) {
 				System.out.println("success insert");
+				return "Success Employee Insertion";
 			} else {
 				System.out.println("did not insert");
+				return "did not insert";
 			}
 			
 //			Statement statement = connection.createStatement();
@@ -140,14 +142,14 @@ public class JDBC_Controller {
 			
 			
 		} catch(SQLException e) {
-			System.out.println("Error executing query: ");
+			System.out.println(e.getMessage());
 			e.printStackTrace();
+			return e.getMessage();
 		}
 		
-		return false;
 	}
 	
-	public boolean insert_Employee_WorksOn_Project(String essn, int pno, int hours) {
+	public String insert_Employee_WorksOn_Project(String essn, int pno, int hours) {
 		try {
 			Class.forName(DRIVERNAME);
 			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
@@ -170,19 +172,21 @@ public class JDBC_Controller {
 			
 			int attempt = statement.executeUpdate();
 			if(attempt == 1) {
-				System.out.println("success insert");
-				return true;
+				System.out.println("success project insert");
+				return "successful project insert";
 			} else {
-				System.out.println("did not insert");
+				System.out.println("did not insert project");
+				throw new Exception("Did not insert project");
 			}
         	
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
+			
 		}
 		
 		
-		
-		return false;
+//		throw new Exception("Did not insert");
+		return "Error Inserting Project";
 	}
 	
 	public int get_Works_On_Hours(String essn) {
@@ -214,6 +218,49 @@ public class JDBC_Controller {
 			e.printStackTrace();
 		}
 		return -1; //failed
+	}
+	
+	public boolean insert_Employee_Dependent(String essn, String dependentName, String sex, String bDate, String relationship) {
+		try {
+			Class.forName(DRIVERNAME);
+			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
+		}
+        catch(ClassNotFoundException e) {
+        	System.out.println("Driver could not be loaded."); //Visual confirmation if the drivers failed
+        }
+		try {
+			Connection connection = DriverManager.getConnection(dbUrl, username, password);
+			
+			//Parse date and any other values
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+			java.util.Date javaBDate = sdf.parse(bDate);
+			java.sql.Date sqlBDate = new java.sql.Date(javaBDate.getTime());
+			
+			PreparedStatement statement;
+			String query = "insert into dependent (essn, dependent_name, sex, bdate, relationship) values (?,?,?,?,?)";
+			statement = connection.prepareStatement(query);
+			statement.clearParameters();
+			
+			statement.setString(1,essn);
+			statement.setString(2,dependentName);
+			statement.setString(3,sex);
+			statement.setDate(4,sqlBDate);
+			statement.setString(5,relationship);
+			
+			int attempt = statement.executeUpdate();
+			if(attempt == 1) {
+				System.out.println("success insert");
+				return true;
+			} else {
+				System.out.println("did not insert");
+			}
+			
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	

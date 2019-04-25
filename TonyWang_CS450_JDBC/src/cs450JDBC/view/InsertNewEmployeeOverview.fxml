@@ -15,18 +15,19 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TextField fx:id="firstName" layoutX="26.0" layoutY="19.0" promptText="First Name" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0" />
+                        <TextField fx:id="firstName" layoutX="26.0" layoutY="19.0" onMouseClicked="#on_Edit_FirstName" promptText="First Name" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0" />
                         <TextField fx:id="middleName" layoutX="211.0" layoutY="30.0" promptText="Middle Initial" AnchorPane.leftAnchor="210.0" />
-                        <TextField fx:id="lastName" layoutX="388.0" layoutY="30.0" promptText="Last Name" AnchorPane.rightAnchor="30.0" />
-                        <TextField fx:id="ssn" layoutX="40.0" layoutY="74.0" promptText="Social Security Number" AnchorPane.leftAnchor="30.0" />
+                        <TextField fx:id="lastName" layoutX="388.0" layoutY="30.0" onMouseClicked="#on_Edit_LastName" promptText="Last Name" AnchorPane.rightAnchor="30.0" />
+                        <TextField fx:id="ssn" layoutX="40.0" layoutY="74.0" onMouseClicked="#on_Edit_Ssn" promptText="Social Security Number" AnchorPane.leftAnchor="30.0" />
                         <TextField fx:id="birthday" layoutX="220.0" layoutY="74.0" promptText="Birthday (YYYY-MM-DD)" AnchorPane.leftAnchor="210.0" />
                         <TextField fx:id="address" layoutX="400.0" layoutY="74.0" promptText="Address" AnchorPane.rightAnchor="30.0" />
-                        <TextField fx:id="sex" layoutX="40.0" layoutY="115.0" promptText="Sex" AnchorPane.leftAnchor="30.0" />
+                        <TextField fx:id="sex" layoutX="40.0" layoutY="115.0" promptText="Sex (M/F)" AnchorPane.leftAnchor="30.0" />
                         <TextField fx:id="salary" layoutX="220.0" layoutY="115.0" promptText="Salary" AnchorPane.leftAnchor="210.0" />
                         <TextField fx:id="superSsn" layoutX="409.0" layoutY="115.0" promptText="Superior SSN" AnchorPane.rightAnchor="30.0" />
                         <TextField fx:id="dno" layoutX="40.0" layoutY="163.0" promptText="Department Number" />
                         <TextField fx:id="email" layoutX="220.0" layoutY="163.0" promptText="Email" AnchorPane.leftAnchor="210.0" />
                         <Button fx:id="generalInformation_Next" layoutX="436.0" layoutY="207.0" mnemonicParsing="false" onAction="#check_New_Employee_Information" text="Submit &amp; Next" />
+                        <Label fx:id="generalInformation_errorLabel" layoutX="40.0" layoutY="241.0" text="Label" />
                      </children>
                   </AnchorPane>
               </content>
@@ -35,11 +36,12 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TextField fx:id="essn" layoutX="44.0" layoutY="43.0" promptText="Employee SSN" />
-                        <TextField fx:id="pno" layoutX="44.0" layoutY="104.0" promptText="Project Number" />
-                        <TextField fx:id="hours" layoutX="46.0" layoutY="162.0" promptText="Hours" />
-                        <Button fx:id="projectInformation_Submit" layoutX="46.0" layoutY="221.0" mnemonicParsing="false" onAction="#check_Project_Information" text="Submit" />
-                        <Button fx:id="projectInformation_Next" layoutX="152.0" layoutY="221.0" mnemonicParsing="false" text="Next" />
+                        <TextField fx:id="essn" layoutX="44.0" layoutY="43.0" onMouseClicked="#on_Edit_Essn" promptText="Employee SSN" />
+                        <TextField fx:id="pno" layoutX="44.0" layoutY="87.0" onMouseClicked="#on_Edit_Pno" promptText="Project Number" />
+                        <TextField fx:id="hours" layoutX="44.0" layoutY="127.0" promptText="Hours" />
+                        <Button fx:id="projectInformation_Submit" layoutX="44.0" layoutY="169.0" mnemonicParsing="false" onAction="#check_Project_Information" text="Submit" />
+                        <Button fx:id="projectInformation_Next" layoutX="152.0" layoutY="169.0" mnemonicParsing="false" onAction="#projectInformation_Next" text="Next" />
+                        <Label fx:id="projectInformation_errorLabel" layoutX="44.0" layoutY="213.0" text="Label" />
                      </children></AnchorPane>
             </content>
           </TitledPane>
@@ -47,14 +49,14 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ToggleButton layoutX="61.0" layoutY="33.0" mnemonicParsing="false" text="ToggleButton" />
                         <TextField fx:id="d_Essn" layoutX="353.0" layoutY="33.0" promptText="Employee SSN" />
                         <TextField fx:id="d_DependentName" layoutX="353.0" layoutY="79.0" promptText="Dependent Name" />
-                        <TextField fx:id="d_Sex" layoutX="353.0" layoutY="126.0" promptText="Sex" />
-                        <TextField fx:id="d_Bdate" layoutX="353.0" layoutY="176.0" promptText="Birthday" />
-                        <Button fx:id="DependentInformation_Next" layoutX="402.0" layoutY="269.0" mnemonicParsing="false" text="Finish" />
+                        <TextField fx:id="d_Sex" layoutX="353.0" layoutY="126.0" promptText="Sex (M/F)" />
+                        <TextField fx:id="d_Bdate" layoutX="353.0" layoutY="176.0" promptText="Birthday (YYYY-MM-DD)" />
+                        <Button fx:id="DependentInformation_Next" layoutX="104.0" layoutY="104.0" mnemonicParsing="false" onAction="#check_Dependent_Information" text="Finish" />
                         <TextField fx:id="d_Relationship" layoutX="354.0" layoutY="223.0" promptText="Relationship" />
-                        <Button layoutX="80.0" layoutY="92.0" mnemonicParsing="false" text="Finish" />
+                        <Label fx:id="dependentInformation_errorLabel" layoutX="113.0" layoutY="154.0" text="Label" />
+                        <ChoiceBox fx:id="choiceBox" layoutX="52.0" layoutY="33.0" prefWidth="150.0" />
                      </children></AnchorPane>
             </content>
           </TitledPane>

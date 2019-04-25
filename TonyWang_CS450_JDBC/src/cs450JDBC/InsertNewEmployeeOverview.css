@@ -1,0 +1,9 @@
+/* File style.css */
+
+.text-field.error {
+  -fx-text-box-border: red ;
+  -fx-focus-color: blue ;
+}
+.text-field:focused {
+    -fx-background-color: -fx-focus-color, -fx-background ;
+}
