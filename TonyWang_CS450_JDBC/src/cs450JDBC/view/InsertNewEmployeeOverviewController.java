@@ -16,9 +16,14 @@ import javafx.scene.control.Label;
 //import javafx.scene.control.Label;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.ChoiceBox;
 
 import cs450JDBC.MainApplication;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import cs450JDBC.JDBC_Controller; //main controller that does all the DB calling
 
 public class InsertNewEmployeeOverviewController {
@@ -88,6 +93,8 @@ public class InsertNewEmployeeOverviewController {
 	@FXML
 	private Button DependentInformation_Next;
 	@FXML
+	private Button dependentInformation_Submit;
+	@FXML
 	private Label dependentInformation_errorLabel;
 	@FXML 
 	private ChoiceBox<String> choiceBox;
@@ -129,6 +136,32 @@ public class InsertNewEmployeeOverviewController {
 	private void on_Edit_Pno() {
 		pno.getStyleClass().remove("error");
 	}
+	@FXML
+	private void on_Edit_Hours() {
+		hours.getStyleClass().remove("error");
+	}
+	
+	//dependent on_edits
+	@FXML
+	private void on_Edit_d_Essn() {
+		d_Essn.getStyleClass().remove("error");
+	}
+	@FXML
+	private void on_Edit_d_DependentName() {
+		d_DependentName.getStyleClass().remove("error");
+	}
+	
+	
+	
+	//Final Report Anchor Pane
+	@FXML
+	private AnchorPane reportPane;
+	@FXML
+	private Label GI_Report;
+	@FXML
+	private Label PI_Report;
+	@FXML
+	private Label DI_Report;
 	
 	/**
 	 * inserts the new employee with the given information
@@ -152,13 +185,13 @@ public class InsertNewEmployeeOverviewController {
 		 */
 		if(firstName.getText().isEmpty()) {
 			System.out.println("Missing First Name...");
-			generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "Missing First Name...");
+			generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "\nMissing First Name");
 			generalInformation_errorLabel.setVisible(true);
 			firstName.getStyleClass().add("error");
 		}
 		if(lastName.getText().isEmpty()) {
 			System.out.println("Missing Last Name...");
-			generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "Missing Last Name...");
+			generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "\nMissing Last Name");
 			generalInformation_errorLabel.setVisible(true);
 			lastName.getStyleClass().add("error");
 		}
@@ -168,7 +201,7 @@ public class InsertNewEmployeeOverviewController {
 				//check for a valid ssn first
 				if(!(tempSsn >= 100000000) || !(tempSsn < 1000000000) ) { //must be exactly 9 digits
 					
-					throw new Exception("SSN has too many or too few digits..."); //Invalid SSN
+					throw new Exception("\nSSN has too many or too few digits..."); //Invalid SSN
 				}
 				//if all conditions satisfied, a valid employee can be inserted, move to get project info
 				if(!firstName.getText().isEmpty() && !lastName.getText().isEmpty()) {
@@ -177,22 +210,34 @@ public class InsertNewEmployeeOverviewController {
 					String verify = JDBC_Controller.insert_New_Employee(firstName.getText(), middleName.getText(), 
 							lastName.getText(), ssn.getText(), birthday.getText(), address.getText(), 
 							sex.getText(), salary.getText(), superSsn.getText(), dno.getText(), email.getText());
+					
 					if(verify != "Success Employee Insertion") {
 						System.out.println(verify);
 						throw new Exception(verify);
+					} else { //successful
+						essn.setText(ssn.getText()); //preset the essn value for better UX
+						d_Essn.setText(ssn.getText()); //preset the d_Essn value for better UX
 					}
-					mainAccordion.setExpandedPane(projectInformation);
+					
+					mainAccordion.setExpandedPane(projectInformation); //move to next section
 				}
 			} catch(Exception e) {
-				System.out.println(e.getMessage()); //correct way of handling different custom exceptions
-				generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() +  e.getMessage());
-				generalInformation_errorLabel.setVisible(true);
-				ssn.getStyleClass().add("error");
+				if(e.getMessage().contains("ORA-00001")) {
+					generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() +  "\nUnique Constraint SSN violated");
+					generalInformation_errorLabel.setVisible(true);
+					ssn.getStyleClass().add("error");
+				} else {
+					System.out.println(e.getMessage()); //correct way of handling different custom exceptions
+					generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "\nInvalid SSN");
+					generalInformation_errorLabel.setVisible(true);
+					ssn.getStyleClass().add("error");
+				}
+				
 			}
 			
 		} else { //otherwise it's empty
 			System.out.println("Missing Social Security Number...");
-			generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() +  "Missing Social Security Number...");
+			generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() +  "\nMissing Social Security Number");
 			generalInformation_errorLabel.setVisible(true);
 			ssn.getStyleClass().add("error");
 		}
@@ -204,44 +249,76 @@ public class InsertNewEmployeeOverviewController {
 	 */
 	@FXML
 	private void check_Project_Information() {
-		if(essn.getText().isEmpty()) {
-			System.out.println("Missing ESSN...");
-			projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "Missing ESSN...");
-			projectInformation_errorLabel.setVisible(true);
-			essn.getStyleClass().add("error");
-		}
-		if(pno.getText().isEmpty()) {
-			System.out.println("Missing Pno...");
-			projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "Missing Pno...");
-			projectInformation_errorLabel.setVisible(true);
-			pno.getStyleClass().add("error");
-		}
-		if(!hours.getText().isEmpty()) {
-//			int hours = Integer.parseInt(this.hours.getText()); //weird line of code, but cool
-			try {
-				int tempHours = Integer.parseInt(hours.getText());
-				if(tempHours > 9999) {
-//					System.out.println("Too many hours...");
-					throw new Exception("Exceeds type limit set by the database of 4 digits.");
+		projectInformation_errorLabel.setVisible(false); //reset errorLabel in beginning
+		projectInformation_errorLabel.setText(""); //reset text
+		try {
+			if(essn.getText().isEmpty()) {
+				System.out.println("Missing ESSN...");
+				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nMissing ESSN");
+				projectInformation_errorLabel.setVisible(true);
+				essn.getStyleClass().add("error");
+			} else {
+				Long tempEssn = Long.parseLong(essn.getText());
+				if(!(tempEssn >= 100000000) || !(tempEssn < 1000000000)) {
+					System.out.println("ESSN has too many or too few digits");
+					projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nESSN has too many or too few digits");
+					projectInformation_errorLabel.setVisible(true);
+					essn.getStyleClass().add("error");
+					
 				}
-				//get sum hours of employee from db and subtract from 40
-				int existingHours = JDBC_Controller.get_Works_On_Hours(essn.getText());
-				if(existingHours == -1) {
-					throw new Exception("Error?"); //TODO fix this later
-				} else if(existingHours < 40 && (existingHours + tempHours <= 40)) {
-					if(!essn.getText().isEmpty() && !pno.getText().isEmpty()) {
-						//if get here, good to go, call db_insert_project
-						JDBC_Controller.insert_Employee_WorksOn_Project(essn.getText(), Integer.parseInt(pno.getText()), tempHours );
-						System.out.println("got after the insert");
-					}
-				} else {
-					System.out.println("Too many hours for this employee...");
-				}
-			} catch(Exception e) {
-				System.out.println(e.getMessage());
-				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + e.getMessage());
+			}
+			if(pno.getText().isEmpty()) {
+				System.out.println("Missing Pno...");
+				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nMissing Pno");
+				projectInformation_errorLabel.setVisible(true);
+				pno.getStyleClass().add("error");
+			}
+			double tempHours;
+			if(hours.getText().isEmpty()) {
+				tempHours = 0;
+			} else {
+				tempHours = Double.parseDouble(hours.getText());
+			}
+			if(tempHours > 9999) {
+				System.out.println("\nExceeds type limit set by the database of 4 digits.");
+				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nExceeds type limit set by the database of 4 digits");
 				projectInformation_errorLabel.setVisible(true);
 				hours.getStyleClass().add("error");
+			}
+			//get sum hours of employee from db and subtract from 40
+			int existingHours = JDBC_Controller.get_Works_On_Hours(essn.getText()); //calls db to check existing hours
+			if(existingHours == -1) { //this never happens
+				throw new Exception("Error?"); //TODO fix this later
+			} else if(existingHours < 40 && (existingHours + tempHours <= 40)) {
+				if(!essn.getText().isEmpty() && !pno.getText().isEmpty()) {
+					//if get here, good to go, call db_insert_project
+					String verify = JDBC_Controller.insert_Employee_WorksOn_Project(essn.getText(), Integer.parseInt(pno.getText()), hours.getText());
+					if(verify != "success project insert") {
+						throw new Exception(verify);
+					}
+					System.out.println("got after the insert");
+				}
+			} else {
+				System.out.println("Too many hours for this employee...");
+				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nToo many hours for this employee");
+				projectInformation_errorLabel.setVisible(true);
+				hours.getStyleClass().add("error");
+			}
+		} catch(Exception e) {
+			if(e.getMessage().contains("ORA-00001")) { //primary key duplicate
+				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nESSN-Pno combination already exists");
+				projectInformation_errorLabel.setVisible(true);
+				essn.getStyleClass().add("error");
+				pno.getStyleClass().add("error");
+			} else if(e.getMessage().contains("ORA-02291")) { //pno and/or essn doesn't exist
+				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nPno and/or Essn do not exist");
+				projectInformation_errorLabel.setVisible(true);
+				essn.getStyleClass().add("error");
+				pno.getStyleClass().add("error");
+			} else {
+				System.out.println(e.getMessage());
+				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\n" + e.getMessage());
+				projectInformation_errorLabel.setVisible(true);
 			}
 		}
 	}
@@ -259,6 +336,7 @@ public class InsertNewEmployeeOverviewController {
 		d_Sex.setVisible(true);
 		d_Bdate.setVisible(true);
 		d_Relationship.setVisible(true);
+		dependentInformation_Submit.setVisible(true);
 	}
 	
 	@FXML
@@ -268,35 +346,104 @@ public class InsertNewEmployeeOverviewController {
 		d_Sex.setVisible(false);
 		d_Bdate.setVisible(false);
 		d_Relationship.setVisible(false);
+		dependentInformation_Submit.setVisible(false);
 	}
 	
 	@FXML
 	private void check_Dependent_Information() {
-		if(choiceBox.getSelectionModel().getSelectedItem() == "no") {
-			System.out.println("Alright, moving to final screen");
-			//TODO the move
-		} else if(choiceBox.getSelectionModel().getSelectedItem() == "yes") {
+		dependentInformation_errorLabel.setVisible(false); //reset errorLabel in beginning
+		dependentInformation_errorLabel.setText(""); //reset text
+		
+		if(choiceBox.getSelectionModel().getSelectedItem() == "yes") {
 			if(d_Essn.getText().isEmpty()) {
-				System.out.println("Missing ESSN...");
+				System.out.println("Missing ESSN");
+				dependentInformation_errorLabel.setText(dependentInformation_errorLabel.getText() + "\nMissing ESSN");
+				dependentInformation_errorLabel.setVisible(true);
+				d_Essn.getStyleClass().add("error");
 			}
 			if(d_DependentName.getText().isEmpty()) {
-				System.out.println("Missing Dependent Name...");
+				System.out.println("Missing Dependent Name");
+				dependentInformation_errorLabel.setText(dependentInformation_errorLabel.getText() + "\nMissing Dependent Name");
+				dependentInformation_errorLabel.setVisible(true);
+				d_DependentName.getStyleClass().add("error");
 			} else {
-				JDBC_Controller.insert_Employee_Dependent(d_Essn.getText(), 
-						d_DependentName.getText(), d_Sex.getText(), 
-						d_Bdate.getText(), d_Relationship.getText());
-				System.out.println("got after the insert");
+				try {
+					String verify = JDBC_Controller.insert_Employee_Dependent(d_Essn.getText(), 
+							d_DependentName.getText(), d_Sex.getText(), 
+							d_Bdate.getText(), d_Relationship.getText());
+					if(verify != "successful dependent insert") {
+						throw new Exception(verify);
+					}
+					System.out.println("got after the insert");
+				} catch(Exception e) {
+					if(e.getMessage().contains("ORA-00001")) { //primary key duplicate
+						dependentInformation_errorLabel.setText(dependentInformation_errorLabel.getText() + "\nESSN-DependentName combination already exists");
+						dependentInformation_errorLabel.setVisible(true);
+						d_Essn.getStyleClass().add("error");
+						d_DependentName.getStyleClass().add("error");
+					}
+				}
 			}
 		}
 		
 	}
 	
+	@FXML
+	private void finish_to_Report() {
+		mainAccordion.setVisible(false);
+		reportPane.setVisible(true);
+		
+		ResultSet GI_Results = JDBC_Controller.get_GI_Report(ssn.getText());
+    	ResultSet PI_Results = JDBC_Controller.get_PI_Report(ssn.getText());
+    	ResultSet DI_Results = JDBC_Controller.get_DI_Report(ssn.getText());
+    	//parse through the data
+    	try {
+			while(GI_Results.next()) {
+				GI_Report.setText(GI_Report.getText() + "Fname: " + GI_Results.getString(1) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Lname: " + GI_Results.getString(2) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Minit: " + GI_Results.getString(3) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Ssn: " + GI_Results.getString(4) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Bdate: " + GI_Results.getString(5) + "\n");
+				GI_Report.setText(GI_Report.getText() + "address: " + GI_Results.getString(6) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Sex: " + GI_Results.getString(7) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Salary: " + GI_Results.getString(8) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Superssn: " + GI_Results.getString(9) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Dno: " + GI_Results.getString(10) + "\n");
+				GI_Report.setText(GI_Report.getText() + "Email: " + GI_Results.getString(11) + "\n");
+			}
+			if(PI_Results != null) {
+				while(PI_Results.next()) {
+					PI_Report.setText(PI_Report.getText() + "Essn: " + PI_Results.getString(1) + "\n");
+					PI_Report.setText(PI_Report.getText() + "Pno: " + PI_Results.getString(2) + "\n");
+					PI_Report.setText(PI_Report.getText() + "Hours: " + PI_Results.getString(3) + "\n");
+				}
+			} else {
+				DI_Report.setText("Nothing to show");
+			}
+			if(DI_Results != null) {
+				while(DI_Results.next()) {
+					DI_Report.setText(DI_Report.getText() + "Essn: " + DI_Results.getString(1) + "\n");
+					DI_Report.setText(DI_Report.getText() + "Dependent Name: " + DI_Results.getString(2) + "\n");
+					DI_Report.setText(DI_Report.getText() + "Sex: " + DI_Results.getString(3) + "\n");
+					DI_Report.setText(DI_Report.getText() + "Bdate: " + DI_Results.getString(4) + "\n");
+					DI_Report.setText(DI_Report.getText() + "Relationship: " + DI_Results.getString(5) + "\n");
+				}
+			} else {
+				DI_Report.setText("Nothing to show");
+			}
+			
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * comes with startup of the code. stuff that should be upon loading.
 	 */
 	@FXML
 	private void initialize() {
+		reportPane.setVisible(false); //don't show this until ready
 		mainAccordion.setExpandedPane(generalInformation); //sets the general information pane to expanded upon loading in
 		
 		//make dependent initially invisible

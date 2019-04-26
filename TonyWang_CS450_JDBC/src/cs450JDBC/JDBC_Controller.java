@@ -92,39 +92,51 @@ public class JDBC_Controller {
 		
 		try {
 			Connection connection = DriverManager.getConnection(dbUrl, username, password);
-			
-			//Parse date and any other values
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-			java.util.Date javaBDate = sdf.parse(birthday);
-			java.sql.Date sqlBDate = new java.sql.Date(javaBDate.getTime());
-			int tempSalary = Integer.parseInt(salary);
-			int tempDno = Integer.parseInt(dno);
-			
+
 			/**
 			 * insert into employee (Fname, Lname, Minit, ssn, bdate, address, Sex, Salary, Superssn, dno, email) Values ('Tony', 'Wang', 'J', 123456781, '20-JUN-97', 'Chantilly, VA', 'M', 82500, 888665555, 5, 'twang9@gmu.edu')
-
 				select * from employee e join works_on w on e.ssn = w.essn where ssn = 123456781
-				
 				delete from employee where ssn = 123456781
-
 			 */
-			
 			PreparedStatement statement; //maybe nextTime, I don't know how to use this atm
 			String query = "insert into employee (Fname, Lname, Minit, ssn, bdate, address, Sex, Salary, Superssn, dno, email)"
 					+ "Values (?,?,?,?,?,?,?,?,?,?,?)";
 			statement = connection.prepareStatement(query);
 			statement.clearParameters();
 			
+			//Parse date and any other values
+			if(!birthday.trim().equals("")) {
+				System.out.println("birthday not empty");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+				java.util.Date javaBDate = sdf.parse(birthday);
+				java.sql.Date sqlBDate = new java.sql.Date(javaBDate.getTime());
+				statement.setDate(5, sqlBDate);
+			} else {
+				System.out.println("birthday empty");
+				statement.setNull(5, java.sql.Types.DATE);
+			}
+			
+			if(!salary.trim().equals("")) {
+				statement.setInt(8, Integer.parseInt(salary));
+			} else {
+				statement.setNull(8, java.sql.Types.DOUBLE);
+			}
+			
+			if(!dno.trim().equals("")) {
+				statement.setInt(10, Integer.parseInt(dno));
+			} else {
+				statement.setNull(10, java.sql.Types.INTEGER);
+			}
+			
 			statement.setString(1, firstName);
 			statement.setString(2, lastName);
 			statement.setString(3, middleName);
 			statement.setString(4, ssn);
-			statement.setDate(5, sqlBDate);
+			
 			statement.setString(6, address);
 			statement.setString(7, sex);
-			statement.setInt(8, tempSalary);
+			
 			statement.setString(9, superSsn);
-			statement.setInt(10, tempDno);
 			statement.setString(11, email);
 			int attempt = statement.executeUpdate();
 			if(attempt == 1) {
@@ -149,7 +161,7 @@ public class JDBC_Controller {
 		
 	}
 	
-	public String insert_Employee_WorksOn_Project(String essn, int pno, int hours) {
+	public String insert_Employee_WorksOn_Project(String essn, int pno, String hours) {
 		try {
 			Class.forName(DRIVERNAME);
 			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
@@ -166,27 +178,33 @@ public class JDBC_Controller {
 			statement = connection.prepareStatement(query);
 			statement.clearParameters();
 			
+			if(!hours.trim().equals("")) {
+				System.out.println("not empty hours");
+				statement.setDouble(3, Double.parseDouble(hours));
+			} else {
+				System.out.println("empty hours");
+				statement.setNull(3, java.sql.Types.DOUBLE);
+			}
+			
 			statement.setString(1,essn);
 			statement.setInt(2,pno);
-			statement.setInt(3,hours);
+			
 			
 			int attempt = statement.executeUpdate();
 			if(attempt == 1) {
-				System.out.println("success project insert");
+				System.out.println("successful project insert");
 				return "successful project insert";
 			} else {
 				System.out.println("did not insert project");
-				throw new Exception("Did not insert project");
+				return "Did not insert project";
 			}
         	
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
+			return e.getMessage();
 			
 		}
 		
-		
-//		throw new Exception("Did not insert");
-		return "Error Inserting Project";
 	}
 	
 	public int get_Works_On_Hours(String essn) {
@@ -220,7 +238,7 @@ public class JDBC_Controller {
 		return -1; //failed
 	}
 	
-	public boolean insert_Employee_Dependent(String essn, String dependentName, String sex, String bDate, String relationship) {
+	public String insert_Employee_Dependent(String essn, String dependentName, String sex, String bDate, String relationship) {
 		try {
 			Class.forName(DRIVERNAME);
 			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
@@ -231,37 +249,129 @@ public class JDBC_Controller {
 		try {
 			Connection connection = DriverManager.getConnection(dbUrl, username, password);
 			
-			//Parse date and any other values
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-			java.util.Date javaBDate = sdf.parse(bDate);
-			java.sql.Date sqlBDate = new java.sql.Date(javaBDate.getTime());
+			
+			
 			
 			PreparedStatement statement;
 			String query = "insert into dependent (essn, dependent_name, sex, bdate, relationship) values (?,?,?,?,?)";
 			statement = connection.prepareStatement(query);
 			statement.clearParameters();
 			
+			//Parse date and any other values
+			if(!bDate.trim().equals("")) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+				java.util.Date javaBDate = sdf.parse(bDate);
+				java.sql.Date sqlBDate = new java.sql.Date(javaBDate.getTime());
+				statement.setDate(4,sqlBDate);
+			} else {
+				System.out.println("bDate empty");
+				statement.setNull(4, java.sql.Types.DATE);
+			}
+			
 			statement.setString(1,essn);
 			statement.setString(2,dependentName);
 			statement.setString(3,sex);
-			statement.setDate(4,sqlBDate);
 			statement.setString(5,relationship);
 			
 			int attempt = statement.executeUpdate();
 			if(attempt == 1) {
-				System.out.println("success insert");
-				return true;
+				System.out.println("successful dependent insert");
+				return "successful dependent insert";
 			} else {
-				System.out.println("did not insert");
+				System.out.println("did not insert dependent");
+				return "Did not insert dependent";
 			}
 			
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
-			e.printStackTrace();
+			return e.getMessage();
 		}
-		
-		return false;
 	}
 	
+	
+	public ResultSet get_GI_Report(String ssn) {
+		try {
+			Class.forName(DRIVERNAME);
+			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
+		}
+        catch(ClassNotFoundException e) {
+        	System.out.println("Driver could not be loaded."); //Visual confirmation if the drivers failed
+        }
+		
+		try {
+			Connection connection = DriverManager.getConnection(dbUrl, username, password);
+			
+			PreparedStatement statement;
+			String GI_query = "select Fname, Lname, Minit, ssn, bdate, address, Sex, Salary, Superssn, dno, email from employee where ssn = ?";
+			statement = connection.prepareStatement(GI_query);
+			statement.clearParameters();
+			statement.setString(1,ssn);
+			ResultSet results = statement.executeQuery();
+			return results;
+        	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			return null; //failed
+		}
+		
+	}
+	
+	
+	public ResultSet get_PI_Report(String ssn) {
+		try {
+			Class.forName(DRIVERNAME);
+			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
+		}
+        catch(ClassNotFoundException e) {
+        	System.out.println("Driver could not be loaded."); //Visual confirmation if the drivers failed
+        }
+		
+		try {
+			Connection connection = DriverManager.getConnection(dbUrl, username, password);
+			
+			PreparedStatement statement;
+			String PI_query = "select essn, pno, hours from works_on where essn = ?";
+			
+			statement = connection.prepareStatement(PI_query);
+			statement.clearParameters();
+			statement.setString(1,ssn);
+			ResultSet results = statement.executeQuery();
+			return results;
+        	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ResultSet get_DI_Report(String ssn) {
+		try {
+			Class.forName(DRIVERNAME);
+			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
+		}
+        catch(ClassNotFoundException e) {
+        	System.out.println("Driver could not be loaded."); //Visual confirmation if the drivers failed
+        }
+		
+		try {
+			Connection connection = DriverManager.getConnection(dbUrl, username, password);
+			
+			PreparedStatement statement;
+			String DI_query = "select essn, dependent_name, sex, bdate, relationship from dependent where essn = ?";
+			statement = connection.prepareStatement(DI_query);
+			statement.clearParameters();
+			statement.setString(1,ssn);
+			ResultSet results = statement.executeQuery();
+			return results;
+        	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			return null; //failed
+		}
+		
+	}
 	
 }

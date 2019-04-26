@@ -27,7 +27,7 @@
                         <TextField fx:id="dno" layoutX="40.0" layoutY="163.0" promptText="Department Number" />
                         <TextField fx:id="email" layoutX="220.0" layoutY="163.0" promptText="Email" AnchorPane.leftAnchor="210.0" />
                         <Button fx:id="generalInformation_Next" layoutX="436.0" layoutY="207.0" mnemonicParsing="false" onAction="#check_New_Employee_Information" text="Submit &amp; Next" />
-                        <Label fx:id="generalInformation_errorLabel" layoutX="40.0" layoutY="241.0" text="Label" />
+                        <Label fx:id="generalInformation_errorLabel" layoutX="40.0" layoutY="241.0" />
                      </children>
                   </AnchorPane>
               </content>
@@ -41,7 +41,7 @@
                         <TextField fx:id="hours" layoutX="44.0" layoutY="127.0" promptText="Hours" />
                         <Button fx:id="projectInformation_Submit" layoutX="44.0" layoutY="169.0" mnemonicParsing="false" onAction="#check_Project_Information" text="Submit" />
                         <Button fx:id="projectInformation_Next" layoutX="152.0" layoutY="169.0" mnemonicParsing="false" onAction="#projectInformation_Next" text="Next" />
-                        <Label fx:id="projectInformation_errorLabel" layoutX="44.0" layoutY="213.0" text="Label" />
+                        <Label fx:id="projectInformation_errorLabel" layoutX="44.0" layoutY="213.0" />
                      </children></AnchorPane>
             </content>
           </TitledPane>
@@ -49,18 +49,26 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TextField fx:id="d_Essn" layoutX="353.0" layoutY="33.0" promptText="Employee SSN" />
-                        <TextField fx:id="d_DependentName" layoutX="353.0" layoutY="79.0" promptText="Dependent Name" />
+                        <TextField fx:id="d_Essn" layoutX="353.0" layoutY="33.0" onMouseClicked="#on_Edit_d_Essn" promptText="Employee SSN" />
+                        <TextField fx:id="d_DependentName" layoutX="353.0" layoutY="79.0" onMouseClicked="#on_Edit_d_DependentName" promptText="Dependent Name" />
                         <TextField fx:id="d_Sex" layoutX="353.0" layoutY="126.0" promptText="Sex (M/F)" />
                         <TextField fx:id="d_Bdate" layoutX="353.0" layoutY="176.0" promptText="Birthday (YYYY-MM-DD)" />
-                        <Button fx:id="DependentInformation_Next" layoutX="104.0" layoutY="104.0" mnemonicParsing="false" onAction="#check_Dependent_Information" text="Finish" />
+                        <Button fx:id="DependentInformation_Next" layoutX="104.0" layoutY="104.0" mnemonicParsing="false" onAction="#finish_to_Report" text="Finish" />
                         <TextField fx:id="d_Relationship" layoutX="354.0" layoutY="223.0" promptText="Relationship" />
-                        <Label fx:id="dependentInformation_errorLabel" layoutX="113.0" layoutY="154.0" text="Label" />
+                        <Label fx:id="dependentInformation_errorLabel" layoutX="52.0" layoutY="154.0" />
                         <ChoiceBox fx:id="choiceBox" layoutX="52.0" layoutY="33.0" prefWidth="150.0" />
+                        <Button fx:id="dependentInformation_Submit" layoutX="402.0" layoutY="271.0" mnemonicParsing="false" onAction="#check_Dependent_Information" text="Submit" />
                      </children></AnchorPane>
             </content>
           </TitledPane>
         </panes>
       </Accordion>
+      <AnchorPane fx:id="reportPane" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="GI_Report" layoutX="14.0" layoutY="6.0" AnchorPane.leftAnchor="10.0" />
+            <Label fx:id="PI_Report" layoutX="286.0" layoutY="6.0" />
+            <Label fx:id="DI_Report" layoutX="490.0" layoutY="6.0" AnchorPane.rightAnchor="10.0" />
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

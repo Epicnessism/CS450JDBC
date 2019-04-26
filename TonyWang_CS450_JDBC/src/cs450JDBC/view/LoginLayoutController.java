@@ -6,6 +6,7 @@
  */
 package cs450JDBC.view;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
@@ -35,7 +36,7 @@ public class LoginLayoutController {
     }
     
     @FXML
-    public void search_ManagerSSN() {
+    private void search_ManagerSSN() {
     	boolean verify = JDBC_Controller.check_Manager_SSN(managerSSN.getText());
     	if(verify) {
     		LoginStatusLabel.setText("Welcome!"); //TODO too fast, do somewhere else
@@ -44,6 +45,13 @@ public class LoginLayoutController {
     	} else {
     		LoginStatusLabel.setText("SSN denied, please try again.");
     	}
+    }
+    
+    
+    @FXML
+    private void onEnter(ActionEvent actionEvent) {
+    	System.out.println("On Enter"); 
+    	search_ManagerSSN(); //UX quality of consuer experience, enter procs searchMgrSSN
     }
     
     /**
