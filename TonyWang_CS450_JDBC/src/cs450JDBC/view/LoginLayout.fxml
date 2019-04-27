@@ -9,7 +9,7 @@
 <AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs450JDBC.view.LoginLayoutController">
    <children>
       <Button fx:id="searchManagerSSN" alignment="CENTER" layoutX="281.0" layoutY="216.0" mnemonicParsing="false" onAction="#search_ManagerSSN" text="Execute" textAlignment="CENTER" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="125.0" />
-      <Label fx:id="LoginStatusLabel" layoutX="250.0" layoutY="68.0" text="Label" />
+      <Label fx:id="LoginStatusLabel" layoutX="250.0" layoutY="68.0" onMouseClicked="#on_Edit_Login" text="Label" />
       <TextField fx:id="managerSSN" layoutX="268.0" layoutY="75.0" onAction="#onEnter" promptText="Input SSN" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="100.0" />
    </children>
 </AnchorPane>

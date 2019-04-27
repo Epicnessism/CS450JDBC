@@ -29,6 +29,11 @@ public class LoginLayoutController {
 	private MainApplication MainApplication;
 	private JDBC_Controller JDBC_Controller = new JDBC_Controller(); 
 	
+	@FXML
+	private void on_Edit_Login() {
+		LoginStatusLabel.setVisible(false);
+	}
+	
 	/**
      * The constructor is called before the initialize() method.
      */

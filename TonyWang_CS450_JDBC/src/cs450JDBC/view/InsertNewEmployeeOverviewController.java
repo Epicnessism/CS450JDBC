@@ -114,30 +114,27 @@ public class InsertNewEmployeeOverviewController {
 	private void on_Edit_FirstName() {
 		firstName.getStyleClass().remove("error");
 	}
-	
 	@FXML
 	private void on_Edit_LastName() {
 		lastName.getStyleClass().remove("error");
 	}
-	
 	@FXML
 	private void on_Edit_Ssn() {
 		ssn.getStyleClass().remove("error");
 	}
 	
 	
-	
 	//project on_edits
 	@FXML
-	private void on_Edit_Essn() {
+	public void on_Edit_Essn() {
 		essn.getStyleClass().remove("error");
 	}
 	@FXML
-	private void on_Edit_Pno() {
+	public void on_Edit_Pno() {
 		pno.getStyleClass().remove("error");
 	}
 	@FXML
-	private void on_Edit_Hours() {
+	public void on_Edit_Hours() {
 		hours.getStyleClass().remove("error");
 	}
 	
@@ -184,13 +181,13 @@ public class InsertNewEmployeeOverviewController {
 		 * hit submit 5 or 6 times to find all the errors in your form submission.
 		 */
 		if(firstName.getText().isEmpty()) {
-			System.out.println("Missing First Name...");
+			System.out.println("Missing First Name");
 			generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "\nMissing First Name");
 			generalInformation_errorLabel.setVisible(true);
 			firstName.getStyleClass().add("error");
 		}
 		if(lastName.getText().isEmpty()) {
-			System.out.println("Missing Last Name...");
+			System.out.println("Missing Last Name");
 			generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "\nMissing Last Name");
 			generalInformation_errorLabel.setVisible(true);
 			lastName.getStyleClass().add("error");
@@ -204,7 +201,7 @@ public class InsertNewEmployeeOverviewController {
 					throw new Exception("\nSSN has too many or too few digits..."); //Invalid SSN
 				}
 				//if all conditions satisfied, a valid employee can be inserted, move to get project info
-				if(!firstName.getText().isEmpty() && !lastName.getText().isEmpty()) {
+				else if(!firstName.getText().isEmpty() && !lastName.getText().isEmpty()) {
 //					System.out.println("Valid information, inserting and moving to the Projects Pane");
 					//if get here, everything's good to go
 					String verify = JDBC_Controller.insert_New_Employee(firstName.getText(), middleName.getText(), 
@@ -228,9 +225,8 @@ public class InsertNewEmployeeOverviewController {
 					ssn.getStyleClass().add("error");
 				} else {
 					System.out.println(e.getMessage()); //correct way of handling different custom exceptions
-					generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "\nInvalid SSN");
+					generalInformation_errorLabel.setText(generalInformation_errorLabel.getText() + "Invalid, cannot insert data.");
 					generalInformation_errorLabel.setVisible(true);
-					ssn.getStyleClass().add("error");
 				}
 				
 			}
@@ -251,9 +247,12 @@ public class InsertNewEmployeeOverviewController {
 	private void check_Project_Information() {
 		projectInformation_errorLabel.setVisible(false); //reset errorLabel in beginning
 		projectInformation_errorLabel.setText(""); //reset text
+		on_Edit_Essn();
+		on_Edit_Pno();
+		on_Edit_Hours();
 		try {
 			if(essn.getText().isEmpty()) {
-				System.out.println("Missing ESSN...");
+				System.out.println("Missing ESSN");
 				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nMissing ESSN");
 				projectInformation_errorLabel.setVisible(true);
 				essn.getStyleClass().add("error");
@@ -268,7 +267,7 @@ public class InsertNewEmployeeOverviewController {
 				}
 			}
 			if(pno.getText().isEmpty()) {
-				System.out.println("Missing Pno...");
+				System.out.println("Missing Pno");
 				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nMissing Pno");
 				projectInformation_errorLabel.setVisible(true);
 				pno.getStyleClass().add("error");
@@ -286,24 +285,33 @@ public class InsertNewEmployeeOverviewController {
 				hours.getStyleClass().add("error");
 			}
 			//get sum hours of employee from db and subtract from 40
-			int existingHours = JDBC_Controller.get_Works_On_Hours(essn.getText()); //calls db to check existing hours
-			if(existingHours == -1) { //this never happens
+			ResultSet existingSet = JDBC_Controller.get_Works_On__NumProjects_Hours(essn.getText()); //calls db to check existing hours
+			if(existingSet == null) { //this never happens
 				throw new Exception("Error?"); //TODO fix this later
-			} else if(existingHours < 40 && (existingHours + tempHours <= 40)) {
-				if(!essn.getText().isEmpty() && !pno.getText().isEmpty()) {
-					//if get here, good to go, call db_insert_project
-					String verify = JDBC_Controller.insert_Employee_WorksOn_Project(essn.getText(), Integer.parseInt(pno.getText()), hours.getText());
-					if(verify != "success project insert") {
-						throw new Exception(verify);
+			} else if(existingSet.next()) {
+				if(existingSet.getInt("hours") < 40 && (existingSet.getInt("Hours") + tempHours <= 40)) {
+					if(existingSet.getInt("projects") < 2) { //EXTRA CREDIT 1
+						if(!essn.getText().isEmpty() && !pno.getText().isEmpty()) {
+							//if get here, good to go, call db_insert_project
+							String verify = JDBC_Controller.insert_Employee_WorksOn_Project(essn.getText(), Integer.parseInt(pno.getText()), hours.getText());
+							if(verify != "successful project insert") {
+								throw new Exception(verify);
+							}
+							System.out.println("got after the insert");
+						}
+					} else {
+						System.out.println("Employee may only work on up to 2 projects");
+						projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nEmployee may only work on up to 2 projects");
+						projectInformation_errorLabel.setVisible(true);
+						pno.getStyleClass().add("error");
 					}
-					System.out.println("got after the insert");
+				} else {
+					System.out.println("Too many hours for this employee...");
+					projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nToo many hours for this employee");
+					projectInformation_errorLabel.setVisible(true);
+					hours.getStyleClass().add("error");
 				}
-			} else {
-				System.out.println("Too many hours for this employee...");
-				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nToo many hours for this employee");
-				projectInformation_errorLabel.setVisible(true);
-				hours.getStyleClass().add("error");
-			}
+			} 
 		} catch(Exception e) {
 			if(e.getMessage().contains("ORA-00001")) { //primary key duplicate
 				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\nESSN-Pno combination already exists");
@@ -317,7 +325,7 @@ public class InsertNewEmployeeOverviewController {
 				pno.getStyleClass().add("error");
 			} else {
 				System.out.println(e.getMessage());
-				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\n" + e.getMessage());
+				projectInformation_errorLabel.setText(projectInformation_errorLabel.getText() + "\n" + "Invalid, cannot insert data");
 				projectInformation_errorLabel.setVisible(true);
 			}
 		}

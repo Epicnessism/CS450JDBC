@@ -207,7 +207,7 @@ public class JDBC_Controller {
 		
 	}
 	
-	public int get_Works_On_Hours(String essn) {
+	public ResultSet get_Works_On__NumProjects_Hours(String essn) {
 		try {
 			Class.forName(DRIVERNAME);
 			System.out.println("Driver successfully loaded!"); //visual test to see if drivers loaded
@@ -220,22 +220,23 @@ public class JDBC_Controller {
 			Connection connection = DriverManager.getConnection(dbUrl, username, password);
 			
 			PreparedStatement statement;
-			String query = "select sum(hours) hours from works_on where essn = ?";
+			String query = "select count(pno) projects, sum(hours) hours from works_on where essn = ?";
 			statement = connection.prepareStatement(query);
 			statement.clearParameters();
 			
 			statement.setString(1,essn);
 			
 			ResultSet results = statement.executeQuery();
-			results.next();
-			System.out.println(results.getInt("hours"));
-			return results.getInt("hours");
+//			results.next();
+//			System.out.println(results.getInt("hours"));
+//			return results.getInt("hours");
+			return results;
         	
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
-		return -1; //failed
+		return null; //failed
 	}
 	
 	public String insert_Employee_Dependent(String essn, String dependentName, String sex, String bDate, String relationship) {
